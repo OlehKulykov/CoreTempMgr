@@ -623,7 +623,7 @@ namespace ctm {
             throw std::invalid_argument("Null XConfig path");
         }
         
-        auto & cpu0 = doc["..."];
+        auto & cpu0 = doc["cpu"];
         if (!cpu0.IsObject()) {
             throw std::runtime_error("XConfig 'cpu' not found");
         }
@@ -632,7 +632,7 @@ namespace ctm {
         r2d9rj::RJValue cpu1;
         cpu1.CopyFrom(cpu0, allocator);
         
-        auto & rx = cpu1["..."];
+        auto & rx = cpu1["rx"];
         if (!rx.IsArray()) {
             throw std::runtime_error("XConfig 'rx' not found");
         }

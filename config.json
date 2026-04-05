@@ -27,12 +27,16 @@
         "--max=%iMHz"
     ],
     
-    "xname": "<ANY_SERVICE_NAME>",
-    "xconfig": "<PATH_TO_ANY_SERVICES_PATH>",
+    "xname": "xmrig",
+    "xconfig": "/run/xmrig.json",
     "xargv": [
-        "-<ARG>",
-        "<ARG_VALUE>"
+        "-c",
+        "/run/xmrig.json"
     ],
-
-    "log": "/run/log/coretempmgr.log"
+    
+    // "xpid": "/run/xmrig.pid",
+    // "xkey": "cpu/rx",
+    
+    "log": "/tmp/coretempmgr.log",
+    "__log": "/run/log/coretempmgr.log"
 }

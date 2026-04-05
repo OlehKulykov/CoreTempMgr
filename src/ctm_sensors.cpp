@@ -13,11 +13,14 @@
 #include "r2d9.hpp"
 #include "ctm_sensors.hpp"
 
-#include <sensors/sensors.h>
-#include <sensors/error.h>
+#if !defined(__APPLE__)
+#  include <sensors/sensors.h>
+#  include <sensors/error.h>
+#endif
 
 namespace ctm {
 
+#if !defined(__APPLE__)    
     void Sensors::cleanup() noexcept {
         if (_initialized) {
             ::sensors_cleanup();
@@ -101,6 +104,11 @@ namespace ctm {
         
         throw std::runtime_error("Not initialized");
     }
+#else
+    void Sensors::cleanup() noexcept { }
+    void Sensors::init() { }
+    double Sensors::cpuTemp() const { return std::numeric_limits<double>::min(); }
+#endif
     
     Sensors::~Sensors() noexcept {
         cleanup();

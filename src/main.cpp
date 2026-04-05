@@ -28,9 +28,11 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include <sys/epoll.h>
-#include <sys/timerfd.h>
-#include <sys/signalfd.h>
+#if !defined(__APPLE__)
+#  include <sys/epoll.h>
+#  include <sys/timerfd.h>
+#  include <sys/signalfd.h>
+#endif
 
 static void printHelp(void) noexcept {
     static const char * helpText = "coretempmgr"
@@ -54,6 +56,9 @@ static void printHelp(void) noexcept {
 }
 
 static const char * parseArgs(int argc, const char * argv[]) noexcept {
+#if defined(__APPLE__)
+    return "/Users/residentevil/Hobby/CoreTempMgr/config.json";
+#endif
     const char * path = nullptr;
     for (int i = 0; i < argc; i++) {
         const char * arg = argv[i];
@@ -99,6 +104,7 @@ static void initManager(ctm::Manager & manager, const char * configPath) noexcep
     }
 }
 
+#if !defined(__APPLE__)
 static void deinitEPoll(const r2d9::TrioPOD<int, int, int> & epollFDs) noexcept {
     ::close(epollFDs.first);
     ::close(epollFDs.second);
@@ -178,6 +184,7 @@ static r2d9::TrioPOD<int, int, int> initEPoll(const r2d9::Logger & logger) noexc
     res.third = epoll_fd;
     return res;
 }
+#endif
 
 int main(int argc, const char * argv[]) {
 #if defined(DEBUG)
@@ -186,10 +193,12 @@ int main(int argc, const char * argv[]) {
     
     parseArgs(argc, argv);
     
+#if !defined(__APPLE__)
     if (::mlockall(MCL_CURRENT | MCL_FUTURE) != 0) {
         r2d9::Logger::systemLog(r2d9::loggerTypeCritical, "Error lock all pages, errno: %i (%s)", errno, ::strerror(errno));
         return EXIT_FAILURE;
     }
+#endif
     
     ctm::Manager manager;
     initManager(manager, parseArgs(argc, argv));
@@ -199,6 +208,7 @@ int main(int argc, const char * argv[]) {
     r2d9_stdio_to_dev_null();
 #endif
     
+#if !defined(__APPLE__)
     const auto epollFDs = initEPoll(*manager.logger());
     // epollFDs.first   t_fd
     // epollFDs.second  s_fd
@@ -260,6 +270,13 @@ int main(int argc, const char * argv[]) {
     
     deinitEPoll(epollFDs);
     manager.onExit();
+#else
+    bool running = true;
+    while (running) {
+        manager.tick();
+        ::usleep(2500000);
+    }
+#endif
     
     return EXIT_SUCCESS;
 }
