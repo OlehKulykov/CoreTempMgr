@@ -1,12 +1,13 @@
 # CoreTempManager
 
-**CoreTempManager** is a high-performance Linux system daemon designed for intelligent CPU thermal management and workload orchestration. Developed specifically for multi-chiplet architectures (like AMD Ryzen), it balances system performance with thermal longevity using a deterministic Finite State Machine (FSM).
+**CoreTempManager** is a high-performance Linux system daemon designed for intelligent CPU thermal management and workload orchestration. 
+Developed specifically for dedicated, multi-chiplet server/desktop hardware architectures (like AMD Ryzen 7), it balances system performance with thermal longevity using a deterministic Finite State Machine (FSM).
 
 ## 🚀 Key Features
 
 * **Thermal-Aware Orchestration**: Dynamically manages an external service (via `fork`/`execvp`) based on real-time CPU temperature.
 * **CCD-Aware Core Rotation**: Implements a unique core-pairing strategy to distribute heat across different Compute Complex Dies (CCDs), preventing "hot spots" on the silicon.
-* **Dynamic P-State Management**: Interfaces with `amd-pstate-epp` to adjust frequency limits (`min`/`max`) in real-time, moving beyond static P-state switching.
+* **Dynamic P-State Management**: Interfaces with `amd-pstate-epp` to adjust frequency limits (`min`/`max`) in real-time, moving beyond static P-state switching below max ~5GHz.
 * **Industrial-Grade Reliability**:
     * Uses `mlockall` to prevent memory paging to disk.
     * Signal-safe process management (handling `SIGCHLD`, `SIGTERM`, `SIGSTOP/SIGCONT`).
@@ -30,35 +31,52 @@ The behavior is fully customizable via a JSON configuration file:
 
 ```json
 {
-    "check_time_inc": 300, // tracking time < 'temp_max_stable' & inc
-    "check_time_dec": 60,  // tracking time >= 'temp_max' & dec
-    "temp_max_stable": 39, // temp same during 'check_time_inc'
-    "temp_max": 40,        // >= at any time & down
-    "temp_crit": 42,       // >= at any time & (set min freq & pause|stop)
-    "freq_min": 1000,    // pause|stop, critical, wait, <= 'cores_start'
-    "freq_start": 1200,  // init|start app, = 'cores_start'
-    "freq_overcl": 1600, // temp < 'temp_max_stable' -> inc, <= 'cores_max_stable'
-    "freq_exit": 1600,   // set on app exit
+    "check_time_inc": 300,
+    "check_time_dec": 60,
+    "temp_max_stable": 39,
+    "temp_max": 40,
+    "temp_crit": 42,
+    "freq_min": 1000,
+    "freq_start": 1200,
+    "freq_overcl": 1600,
+    "freq_exit": 1600,
     "step_inc": 200,
     "step_dec": 200,
     "cores": [2,8, 3,9, 4,10, 5,11], // possible core pairs [{,},...]
-    "cores_start":      2, // init|start, number of 'cores'
+    "cores_start": 2,
     "cores_max_stable": 4,
-    "cores_swap_time":  3600,
+    "cores_swap_time":  1800,
     "set_freq_name": "cpupower",
     "set_freq_argv": [
+        "cpupower",
         "frequency-set",
-        "--governor=powersave",
-        "--min=410MHz",
+        "--governor=powersave", // cpupower mode
+        "--min=410MHz", // min CPU frequency, check driver
         "--max=%iMHz"
     ],
-    "xname": "",
-    "xconfig": "",
+    "xname": "<MY_EXTERNAL_SERVICE>",
+    "xconfig": "MY_EXTERNAL_SERVICE_CONFIG_PATH",
     "xargv": [
-        "",
-        ""
+        "<ANY_DESCRIPTION>",
+        "-<ARG0>",
+        "<ARG0_VALUE>"
     ],
-    "log": "/run/coretempmgr.log"
+    "log": "/run/log/coretempmgr.log "
+}
+```
+
+## 📋 Gentoo OpenRC service
+```bash
+#!/sbin/openrc-run
+
+command="coretempmgr"
+command_args="-c <PATH_TO_CONFIG>"
+command_background=true
+pidfile=/run/coretempmgr.pid
+
+depend() {
+    need net
+    use logger
 }
 ```
 
