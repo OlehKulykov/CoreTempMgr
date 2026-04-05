@@ -1,0 +1,38 @@
+{
+    "check_time_inc": 300, // tracking time < 'temp_max_stable' & inc
+    "check_time_dec": 60,  // tracking time >= 'temp_max' & dec
+    
+    "temp_max_stable": 39, // temp same during 'check_time_inc'
+    "temp_max": 40,        // >= at any time & down
+    "temp_crit": 42,       // >= at any time & (set min freq & pause|stop)
+    
+    "freq_min": 1000,    // pause|stop, critical, wait, <= 'cores_start'
+    "freq_start": 1200,  // init|start app, = 'cores_start'
+    "freq_overcl": 1600, // temp < 'temp_max_stable' -> inc, <= 'cores_max_stable'
+    "freq_exit": 1600,   // set on app exit
+    
+    "step_inc": 200,
+    "step_dec": 200,
+    
+    "cores": [2,8, 3,9, 4,10, 5,11], // possible core pairs [{,},...]
+    "cores_start":      2, // init|start, number of 'cores'
+    "cores_max_stable": 4,
+    "cores_swap_time":  3600,
+    
+    "set_freq_name": "cpupower",
+    "set_freq_argv": [
+        "frequency-set",
+        "--governor=powersave",
+        "--min=410MHz",
+        "--max=%iMHz"
+    ],
+    
+    "xname": "<ANY_SERVICE_NAME>",
+    "xconfig": "<PATH_TO_ANY_SERVICES_PATH>",
+    "xargv": [
+        "-<ARG>",
+        "<ARG_VALUE>"
+    ],
+
+    "log": "/run/log/coretempmgr.log"
+}
