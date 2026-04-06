@@ -25,7 +25,7 @@ namespace ctm {
     constexpr CoreType CoreTypeMax = UINT16_MAX;
     typedef r2d9::PairPOD<CoreType, CoreType> CorePair;
     typedef r2d9::SemiFixedArray<CorePair, uint16_t, 8, 8> CorePairsArray;
-    typedef r2d9::SemiFixedArray<CoreType, uint16_t, 8, 8> CoresArray;
+    typedef r2d9::SemiFixedArray<CoreType, uint16_t, 16, 8> CoresArray;
     
     // 65535 sec = 1092 min = 18 h
     class Config final {
