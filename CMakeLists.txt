@@ -42,7 +42,7 @@ endif()
 string(TOLOWER ${CMAKE_GENERATOR} CMAKE_GENERATOR_LOWER)
 
 if (CMAKE_BUILD_TYPE_LOWER STREQUAL "release")
-  string(TIMESTAMP R2D9_TIMESTAMP "%Y-%m-%d 00:00:00.00" UTC)
+  string(TIMESTAMP R2D9_TIMESTAMP "%Y-%m-%d %H:%M:%S.%f" UTC)
 else()
   string(TIMESTAMP R2D9_TIMESTAMP "%Y-%m-%d 00:00:00.00" UTC)
   add_definitions(-DDEBUG=1)
