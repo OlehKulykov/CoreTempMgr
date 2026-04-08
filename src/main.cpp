@@ -142,7 +142,7 @@ static r2d9::TrioPOD<int, int, int> initEPoll(const r2d9::Logger & logger) noexc
         std::exit(EXIT_FAILURE);
     }
     
-    static const int signals[6] = {SIGHUP, SIGINT, SIGQUIT, SIGABRT, SIGTERM, SIGUSR1};
+    const int signals[6] = {SIGHUP, SIGINT, SIGQUIT, SIGABRT, SIGTERM, SIGUSR1};
     for (size_t i = 0; i < 6; i++) {
         if (::sigaddset(&mask, signals[i]) != 0) {
             logger.log(r2d9::loggerTypeCritical, "Error add signal %i, errno: %i (%s)", signals[i], errno, ::strerror(errno));
