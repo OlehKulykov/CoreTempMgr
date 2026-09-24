@@ -42,6 +42,7 @@
 
 namespace ctm {
     
+    /*
     void Manager::performStartX() {
         const char * xName = _config->xName();
         char * const * xArgv = _config->xArgv();
@@ -92,53 +93,56 @@ namespace ctm {
             _logger->log(r2d9::loggerTypeInfo, "Child process stopped, status: %i, errno: %i (%s)", status, errno, ::strerror(errno));
         }
     }
+    */
     
     void Manager::performStart() {
-        _corePairs.clear();
-        _activeCores.clear();
-        _swapTime = _time = -1;
+//        _corePairs.clear();
+//        _activeCores.clear();
+        _swapTime = -1;
+        _time = -1;
         _freq = 0;
         
-        CorePairsArray corePairs;
-        {
-            const auto & cores = _config->cores();
-            CorePair tmpPair;
-            tmpPair.first = tmpPair.second = CoreTypeMax;
-            for (size_t i = 0, n = cores.size(); i < n; i++) {
-                if (tmpPair.first == CoreTypeMax) {
-                    tmpPair.first = cores[i];
-                } else {
-                    tmpPair.second = cores[i];
-                    corePairs.pushBack(tmpPair);
-                    tmpPair.first = tmpPair.second = CoreTypeMax;
-                }
-            }
-            if ((tmpPair.first != CoreTypeMax) && (tmpPair.second == CoreTypeMax)) {
-                corePairs.pushBack(tmpPair);
-            }
-        }
-        
-        auto activeCores = generateAppendingActiveCores(corePairs, _activeCores, _config->coresStart());
+//        CorePairsArray corePairs;
+//        {
+//            const auto & cores = _config->cores();
+//            CorePair tmpPair;
+//            tmpPair.first = tmpPair.second = CoreTypeMax;
+//            for (size_t i = 0, n = cores.size(); i < n; i++) {
+//                if (tmpPair.first == CoreTypeMax) {
+//                    tmpPair.first = cores[i];
+//                } else {
+//                    tmpPair.second = cores[i];
+//                    corePairs.pushBack(tmpPair);
+//                    tmpPair.first = tmpPair.second = CoreTypeMax;
+//                }
+//            }
+//            if ((tmpPair.first != CoreTypeMax) && (tmpPair.second == CoreTypeMax)) {
+//                corePairs.pushBack(tmpPair);
+//            }
+//        }
+//        
+//        auto activeCores = generateAppendingActiveCores(corePairs, _activeCores, _config->coresStart());
         const auto freq = _config->freqStart();
-        setCores(activeCores, _config->xConfigFilePath());
+//        setCores(activeCores, _config->xConfigFilePath());
         setFreq(freq);
-        _freq = freq;
-        _activeCores = static_cast<CoresArray &&>(activeCores);
-        _corePairs = static_cast<CorePairsArray &&>(corePairs);
+//        _freq = freq;
+//        _activeCores = static_cast<CoresArray &&>(activeCores);
+//        _corePairs = static_cast<CorePairsArray &&>(corePairs);
         
-        if (_state == State::paused) {
-            if (performResume()) {
-                return;
-            }
-            performStopX();
-            _state = State::stoped;
-        }
-        
-        if ((_state == State::none) || (_state == State::stoped) || (_xPID < 0)) {
-            performStartX();
-        }
+//        if (_state == State::paused) {
+//            if (performResume()) {
+//                return;
+//            }
+//            performStopX();
+//            _state = State::stoped;
+//        }
+//        
+//        if ((_state == State::none) || (_state == State::stoped) || (_xPID < 0)) {
+//            performStartX();
+//        }
     }
     
+    /*
     void Manager::performIncCores() {
         auto activeCores = generateAppendingActiveCores(_corePairs, _activeCores, 1);
         if (activeCores.size() != (_activeCores.size() + 1)) {
@@ -147,6 +151,7 @@ namespace ctm {
         setCores(activeCores, _config->xConfigFilePath());
         _activeCores = static_cast<CoresArray &&>(activeCores);
     }
+    */
     
     void Manager::performIncFreq() {
         const auto freq = _freq + _config->stepInc();
@@ -155,24 +160,25 @@ namespace ctm {
     }
     
     void Manager::performInc() {
-        if (_activeCores.size() < _config->coresStart()) {
-            performIncCores();
-            return;
-        }
+//        if (_activeCores.size() < _config->coresStart()) {
+//            performIncCores();
+//            return;
+//        }
         
-        if (_freq < _config->freqStart()) {
-            performIncFreq();
-            return;
-        }
+//        if (_freq < _config->freqStart()) {
+//            performIncFreq();
+//            return;
+//        }
         
-        if (_activeCores.size() < _config->coresMaxStable()) {
-            performIncCores();
-            return;
-        }
+//        if (_activeCores.size() < _config->coresMaxStable()) {
+//            performIncCores();
+//            return;
+//        }
         
         performIncFreq();
     }
     
+    /*
     bool Manager::performDecCores() {
         CoresArray cores;
         for (size_t i = 1, n = _activeCores.size(); i < n; i++) {
@@ -185,6 +191,7 @@ namespace ctm {
         }
         return false;
     }
+    */
     
     bool Manager::performDecFreq() {
         if (_freq > _config->freqMin()) {
@@ -201,27 +208,30 @@ namespace ctm {
             return true;
         }
         
-        if ((_activeCores.size() > _config->coresMaxStable()) && performDecCores()) {
-            return true;
-        }
+//        if ((_activeCores.size() > _config->coresMaxStable()) && performDecCores()) {
+//            return true;
+//        }
         
         if ((_freq > _config->freqStart()) && performDecFreq()) {
             return true;
         }
         
-        if ((_freq >= _config->freqStart()) && (_activeCores.size() > _config->coresStart())) {
-            if (performDecCores()) {
-                return true;
-            }
-        }
-                
-        if (performDecFreq()) {
-            return true;
-        }
+//        if ((_freq >= _config->freqStart()) && (_activeCores.size() > _config->coresStart())) {
+//            if (performDecCores()) {
+//                return true;
+//            }
+//        }
         
-        return performDecCores();
+        return performDecFreq();
+        
+//        if (performDecFreq()) {
+//            return true;
+//        }
+//        
+//        return performDecCores();
     }
     
+    /*
     bool Manager::performPause() noexcept {
         if (_xPID > 0) {
             if (::kill(_xPID, SIGSTOP) == 0) {
@@ -245,7 +255,7 @@ namespace ctm {
         }
         return false;
     }
-        
+    
     void Manager::performStop() {
         performStopX();
         setFreq(_config->freqExit());
@@ -340,6 +350,7 @@ namespace ctm {
         setCores(activeCores, _config->xConfigFilePath());
         _activeCores = static_cast<CoresArray &&>(activeCores);
     }
+    */
     
     int Manager::executeSync(const char * command, char * const argv[], const size_t timeoutMs) noexcept {
         const pid_t pid = ::fork();
@@ -382,7 +393,8 @@ namespace ctm {
         if (canStart(temp)) {
             _logger->log(r2d9::loggerTypeInfo, "Starting, %" PRIi64 "°C", temp);
             performStart();
-            setTimeState((_swapTime = time), State::started);
+//            setTimeState((_swapTime = time), State::started);
+            setTimeState(time, State::started);
             return;
         }
         
@@ -392,19 +404,19 @@ namespace ctm {
                 _logger->log(r2d9::loggerTypeInfo, "Crit: decremented %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
                 return;
             }
-            if (canPause()) {
-                if (performPause()) {
-                    setTimeState(time, State::paused);
-                    _logger->log(r2d9::loggerTypeInfo, "Crit: paused, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
-                    return;
-                }
-            }
-            if (canStop()) {
-                performStop();
-                setTimeState(time, State::stoped);
-                _logger->log(r2d9::loggerTypeInfo, "Crit: stoped, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
-                _swapTime = -1;
-            }
+//            if (canPause()) {
+//                if (performPause()) {
+//                    setTimeState(time, State::paused);
+//                    _logger->log(r2d9::loggerTypeInfo, "Crit: paused, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                    return;
+//                }
+//            }
+//            if (canStop()) {
+//                performStop();
+//                setTimeState(time, State::stoped);
+//                _logger->log(r2d9::loggerTypeInfo, "Crit: stoped, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                _swapTime = -1;
+//            }
             return;
         }
         
@@ -415,38 +427,38 @@ namespace ctm {
                     _logger->log(r2d9::loggerTypeInfo, "Max: decremented, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
                     return;
                 }
-                if (canPause()) {
-                    if (performPause()) {
-                        setTimeState(time, State::paused);
-                        _logger->log(r2d9::loggerTypeInfo, "Max: paused, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
-                        return;
-                    }
-                }
-                _logger->log(r2d9::loggerTypeInfo, "Max: can't dec|pause. Stopping, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
-                performStop();
-                setTimeState(time, State::stoped);
-                _swapTime = -1;
+//                if (canPause()) {
+//                    if (performPause()) {
+//                        setTimeState(time, State::paused);
+//                        _logger->log(r2d9::loggerTypeInfo, "Max: paused, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                        return;
+//                    }
+//                }
+//                _logger->log(r2d9::loggerTypeInfo, "Max: can't dec|pause. Stopping, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                performStop();
+//                setTimeState(time, State::stoped);
+//                _swapTime = -1;
             }
             return;
         }
         
-        if (canSwap(time)) { // before inc
-            r2d9::FixedStringStream<127> fs; fs << '[';
-            for (size_t i = 0, n = _activeCores.size(); i < n; i++) {
-                if (i) fs << ',';
-                fs << _activeCores[i];
-            }
-            fs << ']';
-            performSwap();
-            _swapTime = time;
-            fs << " » [";
-            for (size_t i = 0, n = _activeCores.size(); i < n; i++) {
-                if (i) fs << ',';
-                fs << _activeCores[i];
-            }
-            fs << ']';
-            _logger->log(r2d9::loggerTypeInfo, "Swapped, %s, %" PRIu16 "MHz %" PRIi64 "°C", static_cast<const char *>(fs), _freq, temp);
-        }
+//        if (canSwap(time)) { // before inc
+//            r2d9::FixedStringStream<127> fs; fs << '[';
+//            for (size_t i = 0, n = _activeCores.size(); i < n; i++) {
+//                if (i) fs << ',';
+//                fs << _activeCores[i];
+//            }
+//            fs << ']';
+//            performSwap();
+//            _swapTime = time;
+//            fs << " » [";
+//            for (size_t i = 0, n = _activeCores.size(); i < n; i++) {
+//                if (i) fs << ',';
+//                fs << _activeCores[i];
+//            }
+//            fs << ']';
+//            _logger->log(r2d9::loggerTypeInfo, "Swapped, %s, %" PRIu16 "MHz %" PRIi64 "°C", static_cast<const char *>(fs), _freq, temp);
+//        }
         
         if ((temp < _config->tempMaxStable()) && canInc(time)) {
             performInc();
@@ -460,9 +472,9 @@ namespace ctm {
             case State::none:
                 return true;
                 
-            case State::paused:
-            case State::stoped:
-                return (currTemp < _config->tempMaxStable());
+//            case State::paused:
+//            case State::stoped:
+//                return (currTemp < _config->tempMaxStable());
                 
             default:
                 break;
@@ -486,8 +498,8 @@ namespace ctm {
     bool Manager::canDec(const int64_t currTime) const noexcept {
         switch (_state) {
             case State::none:
-            case State::paused:
-            case State::stoped:
+//            case State::paused:
+//            case State::stoped:
                 return false;
                 
             case State::started:
@@ -505,8 +517,9 @@ namespace ctm {
         }
         return true;
     }
-    
+    /*
     bool Manager::canSwap(const int64_t currTime) const noexcept {
+        return false;
         switch (_state) {
             case State::none:
             case State::stoped:
@@ -520,6 +533,7 @@ namespace ctm {
     }
     
     bool Manager::canPause() const noexcept {
+        return false;
         switch (_state) {
             case State::none:
             case State::paused:
@@ -535,6 +549,7 @@ namespace ctm {
     bool Manager::canStop() const noexcept {
         return (_state != State::stoped);
     }
+    */
     
     void Manager::reloadConfig() {
         
@@ -543,7 +558,7 @@ namespace ctm {
     void Manager::onExit() noexcept {
         try {
             _logger->log(r2d9::loggerTypeInfo, "Exit");
-            performStop();
+//            performStop();
         } catch (const std::exception & exception) {
             _logger->log(exception);
         }
@@ -601,6 +616,7 @@ namespace ctm {
         }
     }
     
+    /*
     void Manager::setCores(const CoresArray & cores, const char * path) {
         r2d9rj::RJDocument doc;
         if (path) {
@@ -666,7 +682,8 @@ namespace ctm {
         
         ::fclose(f);
     }
-    
+    */
+     
     CoresArray Manager::generateAppendingActiveCores(const CorePairsArray & allPairs,
                                                      const CoresArray & currCores,
                                                      const size_t appendCount) {

@@ -26,51 +26,51 @@ namespace ctm {
             none = 0,
             started,
             incremented,
-            decremented,
-            paused,
-            stoped
+            decremented // ,
+//            paused,
+//            stoped
         };
         
         std::unique_ptr<Config> _config;
         std::unique_ptr<Sensors> _sensors;
         std::unique_ptr<r2d9::Logger> _logger;
         
-        CorePairsArray _corePairs;
-        CoresArray _activeCores;
+//        CorePairsArray _corePairs;
+//        CoresArray _activeCores;
         
         int64_t _time = -1;
-        int64_t _swapTime = -1;
-        pid_t _xPID = -1;
+//        int64_t _swapTime = -1;
+//        pid_t _xPID = -1;
         uint16_t _freq = 0;
         State _state = State::none;
         
         static int64_t currentTime();
         int64_t currentTemp() const;
         
-        void performIncCores();
+//        void performIncCores();
         void performIncFreq();
-        bool performDecCores();
+//        bool performDecCores();
         bool performDecFreq();
-        void performStartX();
-        void performStopX();
+//        void performStartX();
+//        void performStopX();
         
         void performStart();
         void performInc();
         bool performDec();
-        bool performPause() noexcept;
-        bool performResume() noexcept;
-        void performStop();
-        void performSwap();
+//        bool performPause() noexcept;
+//        bool performResume() noexcept;
+//        void performStop();
+//        void performSwap();
         
         bool canStart(const int64_t currTemp) const noexcept;
         bool canInc(const int64_t currTime) const noexcept;
         bool canDec(const int64_t currTime) const noexcept;
-        bool canSwap(const int64_t currTime) const noexcept;
-        bool canPause() const noexcept;
-        bool canStop() const noexcept;
+//        bool canSwap(const int64_t currTime) const noexcept;
+//        bool canPause() const noexcept;
+//        bool canStop() const noexcept;
         
         void setFreq(const int cpuFreq);
-        void setCores(const CoresArray & cores, const char * path);
+//        void setCores(const CoresArray & cores, const char * path);
         
         inline void setTimeState(const int64_t time, const State state) noexcept {
             _time = time;
