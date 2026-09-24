@@ -98,7 +98,7 @@ namespace ctm {
     void Manager::performStart() {
 //        _corePairs.clear();
 //        _activeCores.clear();
-        _swapTime = -1;
+//        _swapTime = -1;
         _time = -1;
         _freq = 0;
         
@@ -401,7 +401,8 @@ namespace ctm {
         if (temp >= _config->tempCrit()) {
             if (performDec()) {
                 setTimeState(time, State::decremented);
-                _logger->log(r2d9::loggerTypeInfo, "Crit: decremented %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                _logger->log(r2d9::loggerTypeInfo, "Crit: decremented %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+                _logger->log(r2d9::loggerTypeInfo, "Crit: decremented %" PRIu16 "MHz %" PRIi64 "°C", _freq, temp);
                 return;
             }
 //            if (canPause()) {
@@ -424,7 +425,8 @@ namespace ctm {
             if (canDec(time)) {
                 if (performDec()) {
                     setTimeState(time, State::decremented);
-                    _logger->log(r2d9::loggerTypeInfo, "Max: decremented, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//                    _logger->log(r2d9::loggerTypeInfo, "Max: decremented, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+                    _logger->log(r2d9::loggerTypeInfo, "Max: decremented, %" PRIu16 "MHz %" PRIi64 "°C", _freq, temp);
                     return;
                 }
 //                if (canPause()) {
@@ -463,7 +465,8 @@ namespace ctm {
         if ((temp < _config->tempMaxStable()) && canInc(time)) {
             performInc();
             setTimeState(time, State::incremented);
-            _logger->log(r2d9::loggerTypeInfo, "Stable: incremented, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+//            _logger->log(r2d9::loggerTypeInfo, "Stable: incremented, %" PRIu32 " core(s) %" PRIu16 "MHz %" PRIi64 "°C", static_cast<uint32_t>(_activeCores.size()), _freq, temp);
+            _logger->log(r2d9::loggerTypeInfo, "Stable: incremented, %" PRIu16 "MHz %" PRIi64 "°C", _freq, temp);
         }
     }
     
