@@ -125,7 +125,7 @@ namespace ctm {
         const auto freq = _config->freqStart();
 //        setCores(activeCores, _config->xConfigFilePath());
         setFreq(freq);
-//        _freq = freq;
+        _freq = freq;
 //        _activeCores = static_cast<CoresArray &&>(activeCores);
 //        _corePairs = static_cast<CorePairsArray &&>(corePairs);
         
